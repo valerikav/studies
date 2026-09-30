@@ -24,19 +24,27 @@ def update_t_label(event):
 def exchange():
     target_code = t_combobox.get()
     base_code = b_combobox.get()
+    base2_code = b2_combobox.get()
 
-    if target_code and base_code:
+    if target_code and base_code and base2_code:
         try:
             response = requests.get(f'https://open.er-api.com/v6/latest/{base_code}')
             response.raise_for_status()
+            response2 = requests.get(f'https://open.er-api.com/v6/latest/{base2_code}')
+            response2.raise_for_status()
 
             data = response.json()
+            data2 = response2.json()
 
-            if target_code in data['rates']:
+            if target_code in data['rates'] and target_code in data2['rates']:
                 exchange_rate = data['rates'][target_code]
+                exchange_rate2 = data2['rates'][target_code]
                 base = currencies[base_code]
+                base2 = currencies[base2_code]
                 target = currencies[target_code]
-                mb.showinfo("Курс обмена", f"Курс {exchange_rate:.1f} {target} за 1 {base}")
+                mb.showinfo("Курс обмена", f"""Курс:
+{exchange_rate:.3f} {target} за 1 {base}
+{exchange_rate2:.3f} {target} за 1 {base2}""")
             else:
                 mb.showerror("Ошибка", f"Валюта {target_code} не найдена")
         except Exception as e:
